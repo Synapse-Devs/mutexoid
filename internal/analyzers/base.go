@@ -16,6 +16,7 @@ func NewRegistry() *Registry {
 	// Register all analyzers
 	r.registerMutexAnalyzer()
 	r.registerEnglishCommentsAnalyzer()
+	r.registerTestPackageAnalyzer()
 
 	return r
 }
@@ -37,4 +38,9 @@ func (r *Registry) Get(name string) *analysis.Analyzer {
 // register adds an analyzer to the registry
 func (r *Registry) register(a *analysis.Analyzer) {
 	r.analyzers[a.Name] = a
+}
+
+// registerTestPackageAnalyzer registers the test package analyzer
+func (r *Registry) registerTestPackageAnalyzer() {
+	r.register(TestPackageAnalyzer)
 }
