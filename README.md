@@ -31,6 +31,55 @@ Ensures that table-driven tests include both positive and negative test cases fo
 - Helps maintain comprehensive test suites
 - Improves code quality through better testing
 
+### 6. Useless Comments (uselesscomments)
+Detects and reports redundant comments that don't add value to code understanding.
+- Identifies comments that just repeat the code structure
+- Catches obvious descriptions that don't provide additional context
+- Helps maintain meaningful documentation
+
+Examples of issues detected:
+```go
+// Bad - will trigger warnings
+// UserService is a service for users
+type UserService struct{}
+
+// GetUser gets the user
+func GetUser(id string) string {}
+
+// ServiceInterface extends the base interface
+type ServiceInterface interface {
+    // GetData gets the data
+    GetData() string
+}
+
+// Good - no warnings
+// UserService handles user authentication and authorization with OAuth2
+type UserService struct{}
+
+// GetUser retrieves user data from cache or database according to configured priority
+func GetUser(id string) string {}
+
+// ServiceInterface defines the contract for handling complex data transformations
+type ServiceInterface interface {
+    // GetData retrieves and validates data according to business rules
+    GetData() string
+}
+```
+
+Common patterns that trigger warnings:
+- Comments that just repeat the type/function/method name
+- "is a type that...", "is a struct that...", "is an interface that..."
+- "implements the...", "extends the..."
+- "method that...", "function that..."
+- Simple getter/setter descriptions
+- Comments shorter than 3 words that just mention the element name
+
+Exceptions (not flagged as useless):
+- Comments containing implementation details
+- Descriptions of business logic
+- Comments with specific terms like "performs", "validates", "calculates"
+- Comments explaining "according to" some rules or conditions
+
 ## Installation
 
 ### Global Installation (Recommended)
@@ -44,6 +93,7 @@ go install github.com/Synapse-Devs/mutexoid/cmd/englishcomments@latest # Only En
 go install github.com/Synapse-Devs/mutexoid/cmd/testpackage@latest    # Only test package checks
 go install github.com/Synapse-Devs/mutexoid/cmd/paralleltests@latest  # Only parallel tests checks
 go install github.com/Synapse-Devs/mutexoid/cmd/testcases@latest     # Only test cases checks
+go install github.com/Synapse-Devs/mutexoid/cmd/uselesscomments@latest # Only useless comments checks
 ```
 
 ### Local Installation
@@ -59,6 +109,7 @@ go install ./cmd/englishcomments # Only English comments checks
 go install ./cmd/testpackage    # Only test package checks
 go install ./cmd/paralleltests  # Only parallel tests checks
 go install ./cmd/testcases      # Only test cases checks
+go install ./cmd/uselesscomments # Only useless comments checks
 ```
 
 ## Usage
@@ -76,7 +127,8 @@ mutexoid ./...         # Only check mutex usage
 englishcomments ./...  # Only check English comments
 testpackage ./...      # Only check test package names
 paralleltests ./...    # Only check parallel tests
-testcases ./...         # Only check test cases
+testcases ./...        # Only check test cases
+uselesscomments ./...  # Only check useless comments
 ```
 
 ### Development Mode
@@ -88,6 +140,7 @@ go run cmd/englishcomments/main.go ./... # Only check English comments
 go run cmd/testpackage/main.go ./...    # Only check test package names
 go run cmd/paralleltests/main.go ./...  # Only check parallel tests
 go run cmd/testcases/main.go ./...      # Only check test cases
+go run cmd/uselesscomments/main.go ./... # Only check useless comments
 ```
 
 ### With golangci-lint
@@ -108,6 +161,7 @@ linters:
     - testpackage     # For test package checks
     - paralleltests   # For parallel tests checks
     - testcases       # For test cases checks
+    - uselesscomments # For useless comments checks
   
 linters-settings:
   custom:
@@ -115,127 +169,6 @@ linters-settings:
       path: path/to/mutexoid.so
       description: Collection of code quality analyzers
       original-url: github.com/Synapse-Devs/mutexoid
-```
-
-## Examples
-
-### Mutex Usage
-
-```go
-// Bad - will trigger warnings
-type BadStruct struct {
-    sync.Mutex      // Warning: mutex should be a pointer type
-    mu sync.Mutex   // Warning: mutex should be a pointer type
-}
-
-// Good - no warnings
-type GoodStruct struct {
-    mu *sync.Mutex
-}
-```
-
-### English Comments
-
-```go
-// Good - English comment
-func Calculate() int {
-    return 42
-}
-
-// Плохо - не английский комментарий (Warning: comment should be in English)
-func BadExample() int {
-    return 42
-}
-```
-
-### Test Package Names
-
-```go
-// Bad - will trigger warning
-package mypackage // in file mypackage_test.go
-
-// Good - no warning
-package mypackage_test // in file mypackage_test.go
-```
-
-### Parallel Tests
-
-```go
-// Bad - will trigger warnings
-func TestBad(t *testing.T) {
-    // Warning: test should call t.Parallel()
-    // Warning: test should use table-driven tests
-    result := Calculate()
-    if result != 42 {
-        t.Error("wrong result")
-    }
-}
-
-// Good - no warnings
-func TestGood(t *testing.T) {
-    t.Parallel() // Enable parallel execution
-
-    tests := []struct{
-        name string
-        want int
-    }{
-        {"case 1", 42},
-        {"case 2", 43},
-    }
-
-    for _, tt := range tests {
-        tt := tt // Capture range variable
-        t.Run(tt.name, func(t *testing.T) {
-            t.Parallel() // Enable parallel execution for subtests
-            result := Calculate()
-            if result != tt.want {
-                t.Errorf("got %d, want %d", result, tt.want)
-            }
-        })
-    }
-}
-```
-
-### Test Cases
-
-```go
-// Bad - will trigger warning
-func TestBad(t *testing.T) {
-    tests := []struct {
-        name    string
-        input   string
-        wantErr bool
-    }{
-        {
-            name:    "success case",
-            input:   "valid",
-            wantErr: false,
-        },
-        // Warning: missing negative test case
-    }
-    // ... test implementation
-}
-
-// Good - no warning
-func TestGood(t *testing.T) {
-    tests := []struct {
-        name    string
-        input   string
-        wantErr bool
-    }{
-        {
-            name:    "success case",
-            input:   "valid",
-            wantErr: false,
-        },
-        {
-            name:    "failure case",
-            input:   "invalid",
-            wantErr: true,
-        },
-    }
-    // ... test implementation
-}
 ```
 
 ## Why it matters
@@ -264,6 +197,13 @@ func TestGood(t *testing.T) {
 ### Test Cases
 - Improves code quality through better testing
 - Helps maintain comprehensive test suites
+
+### Useless Comments
+- Reduces code noise and improves readability
+- Encourages meaningful documentation
+- Promotes self-documenting code practices
+- Makes important comments stand out
+- Helps maintain high-quality documentation
 
 ## License
 

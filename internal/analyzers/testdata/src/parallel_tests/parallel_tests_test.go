@@ -1,4 +1,4 @@
-package p
+package parallel_tests
 
 import "testing"
 
