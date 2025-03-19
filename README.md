@@ -16,19 +16,54 @@ Ensures all code comments are written in English, helping maintain consistency i
 
 ## Installation
 
+### Global Installation (Recommended)
 ```bash
-go install github.com/Synapse-Devs/mutexoid/cmd/mutexoid@latest
+# Install all analyzers
+go install github.com/Synapse-Devs/mutexoid/cmd/all@latest
+
+# Or install individual analyzers
+go install github.com/Synapse-Devs/mutexoid/cmd/mutexoid@latest        # Only mutex checks
+go install github.com/Synapse-Devs/mutexoid/cmd/englishcomments@latest # Only English comments checks
+```
+
+### Local Installation
+```bash
+# Clone the repository
+git clone https://github.com/Synapse-Devs/mutexoid.git
+cd mutexoid
+
+# Build and install locally
+go install ./cmd/all         # Install all analyzers
+go install ./cmd/mutexoid    # Only mutex checks
+go install ./cmd/englishcomments # Only English comments checks
 ```
 
 ## Usage
 
 ### Standalone
 
+Run all analyzers:
 ```bash
-mutexoid ./...
+all ./...
+```
+
+Run individual analyzers:
+```bash
+mutexoid ./...         # Only check mutex usage
+englishcomments ./...  # Only check English comments
+```
+
+### Development Mode
+If you're working on the codebase directly, you can run analyzers without installation:
+```bash
+go run cmd/all/main.go ./...            # Run all analyzers
+go run cmd/mutexoid/main.go ./...       # Only check mutex usage
+go run cmd/englishcomments/main.go ./... # Only check English comments
 ```
 
 ### With golangci-lint
+
+Note: Plugin mode is currently not recommended on macOS due to compatibility issues.
 
 1. Build the plugin:
 ```bash
