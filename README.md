@@ -24,6 +24,13 @@ Ensures that all tests are executed in parallel and follow table-driven test pat
 - Improves test execution speed
 - Helps catch race conditions early
 
+### 5. Test Cases (testcases)
+Ensures that table-driven tests include both positive and negative test cases for better test coverage.
+- Checks for at least one positive test case
+- Checks for at least one negative test case
+- Helps maintain comprehensive test suites
+- Improves code quality through better testing
+
 ## Installation
 
 ### Global Installation (Recommended)
@@ -36,6 +43,7 @@ go install github.com/Synapse-Devs/mutexoid/cmd/mutexoid@latest        # Only mu
 go install github.com/Synapse-Devs/mutexoid/cmd/englishcomments@latest # Only English comments checks
 go install github.com/Synapse-Devs/mutexoid/cmd/testpackage@latest    # Only test package checks
 go install github.com/Synapse-Devs/mutexoid/cmd/paralleltests@latest  # Only parallel tests checks
+go install github.com/Synapse-Devs/mutexoid/cmd/testcases@latest     # Only test cases checks
 ```
 
 ### Local Installation
@@ -50,6 +58,7 @@ go install ./cmd/mutexoid    # Only mutex checks
 go install ./cmd/englishcomments # Only English comments checks
 go install ./cmd/testpackage    # Only test package checks
 go install ./cmd/paralleltests  # Only parallel tests checks
+go install ./cmd/testcases      # Only test cases checks
 ```
 
 ## Usage
@@ -67,6 +76,7 @@ mutexoid ./...         # Only check mutex usage
 englishcomments ./...  # Only check English comments
 testpackage ./...      # Only check test package names
 paralleltests ./...    # Only check parallel tests
+testcases ./...         # Only check test cases
 ```
 
 ### Development Mode
@@ -77,6 +87,7 @@ go run cmd/mutexoid/main.go ./...       # Only check mutex usage
 go run cmd/englishcomments/main.go ./... # Only check English comments
 go run cmd/testpackage/main.go ./...    # Only check test package names
 go run cmd/paralleltests/main.go ./...  # Only check parallel tests
+go run cmd/testcases/main.go ./...      # Only check test cases
 ```
 
 ### With golangci-lint
@@ -96,6 +107,7 @@ linters:
     - englishcomments # For English comments checks
     - testpackage     # For test package checks
     - paralleltests   # For parallel tests checks
+    - testcases       # For test cases checks
   
 linters-settings:
   custom:
@@ -184,6 +196,48 @@ func TestGood(t *testing.T) {
 }
 ```
 
+### Test Cases
+
+```go
+// Bad - will trigger warning
+func TestBad(t *testing.T) {
+    tests := []struct {
+        name    string
+        input   string
+        wantErr bool
+    }{
+        {
+            name:    "success case",
+            input:   "valid",
+            wantErr: false,
+        },
+        // Warning: missing negative test case
+    }
+    // ... test implementation
+}
+
+// Good - no warning
+func TestGood(t *testing.T) {
+    tests := []struct {
+        name    string
+        input   string
+        wantErr bool
+    }{
+        {
+            name:    "success case",
+            input:   "valid",
+            wantErr: false,
+        },
+        {
+            name:    "failure case",
+            input:   "invalid",
+            wantErr: true,
+        },
+    }
+    // ... test implementation
+}
+```
+
 ## Why it matters
 
 ### Mutex Safety
@@ -206,6 +260,10 @@ func TestGood(t *testing.T) {
 - Helps identify race conditions early
 - Enforces consistent test patterns
 - Makes tests more maintainable and readable
+
+### Test Cases
+- Improves code quality through better testing
+- Helps maintain comprehensive test suites
 
 ## License
 
