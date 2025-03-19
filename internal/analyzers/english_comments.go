@@ -11,10 +11,10 @@ import (
 
 // registerEnglishCommentsAnalyzer registers the English comments analyzer
 func (r *Registry) registerEnglishCommentsAnalyzer() {
-	r.register(englishCommentsAnalyzer)
+	r.register(EnglishCommentsAnalyzer)
 }
 
-var englishCommentsAnalyzer = &analysis.Analyzer{
+var EnglishCommentsAnalyzer = &analysis.Analyzer{
 	Name: "englishcomments",
 	Doc:  "Checks that all comments are in English",
 	Run:  runEnglishComments,

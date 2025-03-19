@@ -10,10 +10,10 @@ import (
 
 // registerMutexAnalyzer registers the mutex analyzer
 func (r *Registry) registerMutexAnalyzer() {
-	r.register(mutexAnalyzer)
+	r.register(MutexAnalyzer)
 }
 
-var mutexAnalyzer = &analysis.Analyzer{
+var MutexAnalyzer = &analysis.Analyzer{
 	Name: "mutexoid",
 	Doc:  "Checks for incorrect mutex usage patterns",
 	Run:  runMutexAnalysis,

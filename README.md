@@ -17,6 +17,13 @@ Ensures all code comments are written in English, helping maintain consistency i
 ### 3. Test Package (testpackage)
 Ensures that all test files (*_test.go) use package names with '_test' suffix to properly separate test packages from the main ones.
 
+### 4. Parallel Tests (paralleltests)
+Ensures that all tests are executed in parallel and follow table-driven test patterns for better performance and maintainability.
+- Checks for `t.Parallel()` calls in test functions
+- Enforces table-driven test patterns
+- Improves test execution speed
+- Helps catch race conditions early
+
 ## Installation
 
 ### Global Installation (Recommended)
@@ -28,6 +35,7 @@ go install github.com/Synapse-Devs/mutexoid/cmd/all@latest
 go install github.com/Synapse-Devs/mutexoid/cmd/mutexoid@latest        # Only mutex checks
 go install github.com/Synapse-Devs/mutexoid/cmd/englishcomments@latest # Only English comments checks
 go install github.com/Synapse-Devs/mutexoid/cmd/testpackage@latest    # Only test package checks
+go install github.com/Synapse-Devs/mutexoid/cmd/paralleltests@latest  # Only parallel tests checks
 ```
 
 ### Local Installation
@@ -41,6 +49,7 @@ go install ./cmd/all         # Install all analyzers
 go install ./cmd/mutexoid    # Only mutex checks
 go install ./cmd/englishcomments # Only English comments checks
 go install ./cmd/testpackage    # Only test package checks
+go install ./cmd/paralleltests  # Only parallel tests checks
 ```
 
 ## Usage
@@ -57,6 +66,7 @@ Run individual analyzers:
 mutexoid ./...         # Only check mutex usage
 englishcomments ./...  # Only check English comments
 testpackage ./...      # Only check test package names
+paralleltests ./...    # Only check parallel tests
 ```
 
 ### Development Mode
@@ -66,6 +76,7 @@ go run cmd/all/main.go ./...            # Run all analyzers
 go run cmd/mutexoid/main.go ./...       # Only check mutex usage
 go run cmd/englishcomments/main.go ./... # Only check English comments
 go run cmd/testpackage/main.go ./...    # Only check test package names
+go run cmd/paralleltests/main.go ./...  # Only check parallel tests
 ```
 
 ### With golangci-lint
@@ -84,6 +95,7 @@ linters:
     - mutexoid        # For mutex checks
     - englishcomments # For English comments checks
     - testpackage     # For test package checks
+    - paralleltests   # For parallel tests checks
   
 linters-settings:
   custom:
@@ -134,6 +146,44 @@ package mypackage // in file mypackage_test.go
 package mypackage_test // in file mypackage_test.go
 ```
 
+### Parallel Tests
+
+```go
+// Bad - will trigger warnings
+func TestBad(t *testing.T) {
+    // Warning: test should call t.Parallel()
+    // Warning: test should use table-driven tests
+    result := Calculate()
+    if result != 42 {
+        t.Error("wrong result")
+    }
+}
+
+// Good - no warnings
+func TestGood(t *testing.T) {
+    t.Parallel() // Enable parallel execution
+
+    tests := []struct{
+        name string
+        want int
+    }{
+        {"case 1", 42},
+        {"case 2", 43},
+    }
+
+    for _, tt := range tests {
+        tt := tt // Capture range variable
+        t.Run(tt.name, func(t *testing.T) {
+            t.Parallel() // Enable parallel execution for subtests
+            result := Calculate()
+            if result != tt.want {
+                t.Errorf("got %d, want %d", result, tt.want)
+            }
+        })
+    }
+}
+```
+
 ## Why it matters
 
 ### Mutex Safety
@@ -150,6 +200,12 @@ package mypackage_test // in file mypackage_test.go
 - Keeps test code separate from production code
 - Prevents test dependencies from being included in production builds
 - Improves package organization and maintainability
+
+### Parallel Tests
+- Significantly reduces test execution time
+- Helps identify race conditions early
+- Enforces consistent test patterns
+- Makes tests more maintainable and readable
 
 ## License
 
