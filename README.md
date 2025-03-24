@@ -31,7 +31,14 @@ Ensures that table-driven tests include both positive and negative test cases fo
 - Helps maintain comprehensive test suites
 - Improves code quality through better testing
 
-### 6. Useless Comments (uselesscomments)
+### 6. Config Validator (configvalidator)
+Ensures that struct fields with configuration tags (koanf/json) also have validation tags for better configuration validation.
+- Checks for validation tags on config fields
+- Helps prevent invalid configurations
+- Improves configuration reliability
+- Enforces consistent validation practices
+
+### 7. Useless Comments (uselesscomments)
 Detects and reports redundant comments that don't add value to code understanding.
 - Identifies comments that just repeat the code structure
 - Catches obvious descriptions that don't provide additional context
@@ -93,6 +100,7 @@ go install github.com/Synapse-Devs/mutexoid/cmd/englishcomments@latest # Only En
 go install github.com/Synapse-Devs/mutexoid/cmd/testpackage@latest    # Only test package checks
 go install github.com/Synapse-Devs/mutexoid/cmd/paralleltests@latest  # Only parallel tests checks
 go install github.com/Synapse-Devs/mutexoid/cmd/testcases@latest     # Only test cases checks
+go install github.com/Synapse-Devs/mutexoid/cmd/configvalidator@latest # Only config validation checks
 go install github.com/Synapse-Devs/mutexoid/cmd/uselesscomments@latest # Only useless comments checks
 ```
 
@@ -109,6 +117,7 @@ go install ./cmd/englishcomments # Only English comments checks
 go install ./cmd/testpackage    # Only test package checks
 go install ./cmd/paralleltests  # Only parallel tests checks
 go install ./cmd/testcases      # Only test cases checks
+go install ./cmd/configvalidator # Only config validation checks
 go install ./cmd/uselesscomments # Only useless comments checks
 ```
 
@@ -128,6 +137,7 @@ englishcomments ./...  # Only check English comments
 testpackage ./...      # Only check test package names
 paralleltests ./...    # Only check parallel tests
 testcases ./...        # Only check test cases
+configvalidator ./...  # Only check config validation
 uselesscomments ./...  # Only check useless comments
 ```
 
@@ -140,6 +150,7 @@ go run cmd/englishcomments/main.go ./... # Only check English comments
 go run cmd/testpackage/main.go ./...    # Only check test package names
 go run cmd/paralleltests/main.go ./...  # Only check parallel tests
 go run cmd/testcases/main.go ./...      # Only check test cases
+go run cmd/configvalidator/main.go ./... # Only check config validation
 go run cmd/uselesscomments/main.go ./... # Only check useless comments
 ```
 
@@ -161,6 +172,7 @@ linters:
     - testpackage     # For test package checks
     - paralleltests   # For parallel tests checks
     - testcases       # For test cases checks
+    - configvalidator # For config validation checks
     - uselesscomments # For useless comments checks
   
 linters-settings:
